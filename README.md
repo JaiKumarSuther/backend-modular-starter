@@ -22,6 +22,12 @@ npx backend-modular-starter
 backend-modular-starter
 ```
 
+Pass the project name as a positional argument to skip the name prompt:
+
+```bash
+npx backend-modular-starter my-project-name
+```
+
 You'll be prompted to choose:
 
 - **Project name** – Folder name for your new project

@@ -1583,52 +1583,107 @@ const buildPackageJson = (appName, database, redis, sockets) => {
 
 async function main() {
   console.log(chalk.bold.green("\n  ╔══════════════════════════════════════╗"));
-  console.log(chalk.bold.green("  ║  backend-modular-starter  by Jai   ║"));
+  console.log(chalk.bold.green("  ║  backend-modular-starter  by Jai     ║"));
   console.log(chalk.bold.green("  ╚══════════════════════════════════════╝\n"));
 
-  // No extra modules checkbox — auth + user are always auto-generated
-  const answers = await inquirer.prompt([
-    {
-      type: "input",
-      name: "appName",
-      message: "Project name:",
-      validate: (v) => (v.trim() ? true : "Project name cannot be empty"),
-    },
-    {
-      type: "list",
-      name: "database",
-      message: "Which database?",
-      choices: ["MongoDB", "PostgreSQL", "MySQL", "None"],
-      default: "MongoDB",
-    },
-    {
-      type: "confirm",
-      name: "redis",
-      message: "Include Redis (caching / queues)?",
-      default: false,
-    },
-    {
-      type: "confirm",
-      name: "sockets",
-      message: "Include Socket.IO (real-time events)?",
-      default: false,
-    },
-    {
-      type: "confirm",
-      name: "docker",
-      message: "Include Docker setup (Dockerfile + docker-compose)?",
-      default: false,
-    },
-    {
-      type: "confirm",
-      name: "runInstall",
-      message: "Run npm install now?",
-      default: true,
-    },
-  ]);
+  const argv = process.argv.slice(2);
+  const help = argv.includes("--help") || argv.includes("-h");
+  const appNameArg = argv.find((a) => !a.startsWith("-"));
+  const yes = argv.includes("--yes") || argv.includes("-y");
 
-  const { appName, database, redis, sockets, docker, runInstall } = answers;
+  // No extra modules checkbox — auth + user are always auto-generated
+  if (help) {
+    console.log(
+      [
+        "Usage:",
+        "  backend-modular-starter [project-name] [options]",
+        "",
+        "Examples:",
+        "  npx backend-modular-starter my-project",
+        "  npx backend-modular-starter my-project --yes",
+        "",
+        "Options:",
+        "  -y, --yes     Use defaults (non-interactive except project name if missing)",
+        "  -h, --help    Show help",
+        "",
+      ].join("\n")
+    );
+    process.exit(0);
+  }
+
+  let answers = {};
+  if (yes) {
+    // Non-interactive: only ask for name if missing
+    if (!appNameArg) {
+      answers = await inquirer.prompt([
+        {
+          type: "input",
+          name: "appName",
+          message: "Project name:",
+          validate: (v) => (v.trim() ? true : "Project name cannot be empty"),
+        },
+      ]);
+    }
+  } else {
+    const questions = [];
+    if (!appNameArg) {
+      questions.push({
+        type: "input",
+        name: "appName",
+        message: "Project name:",
+        validate: (v) => (v.trim() ? true : "Project name cannot be empty"),
+      });
+    }
+    questions.push(
+      {
+        type: "list",
+        name: "database",
+        message: "Which database?",
+        choices: ["MongoDB", "PostgreSQL", "MySQL", "None"],
+        default: "MongoDB",
+      },
+      {
+        type: "confirm",
+        name: "redis",
+        message: "Include Redis (caching / queues)?",
+        default: false,
+      },
+      {
+        type: "confirm",
+        name: "sockets",
+        message: "Include Socket.IO (real-time events)?",
+        default: false,
+      },
+      {
+        type: "confirm",
+        name: "docker",
+        message: "Include Docker setup (Dockerfile + docker-compose)?",
+        default: false,
+      },
+      {
+        type: "confirm",
+        name: "runInstall",
+        message: "Run npm install now?",
+        default: true,
+      }
+    );
+    answers = await inquirer.prompt(questions);
+  }
+
+  const appName = (answers.appName || appNameArg || "").trim();
+  const {
+    database = "MongoDB",
+    redis = false,
+    sockets = false,
+    docker = false,
+    runInstall = true,
+  } = answers;
   const root = path.join(process.cwd(), appName);
+
+  if (!appName) {
+    console.log(chalk.red("\n  ❌  Project name cannot be empty.\n"));
+    process.exit(1);
+  }
 
   if (fs.existsSync(root)) {
     console.log(chalk.red(`\n  ❌  Folder "${appName}" already exists.\n`));
