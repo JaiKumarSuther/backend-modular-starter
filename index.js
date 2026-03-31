@@ -1568,12 +1568,12 @@ const buildPackageJson = (appName, database, redis, sockets) => {
     main: "src/server.js",
     scripts: {
       start: "node src/server.js",
-      dev: "nodemon src/server.js",
+      dev: "node --watch src/server.js",
     },
     author: "Jai",
     license: "MIT",
     dependencies: deps,
-    devDependencies: { nodemon: "^3.1.3" },
+    engines: { node: ">=18.0.0" },
   };
 };
 

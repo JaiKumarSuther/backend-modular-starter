@@ -1,15 +1,16 @@
 {
   "name": "backend-modular-starter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Industry-ready modular Node.js backend scaffolding CLI — by Jai",
   "main": "index.js",
   "bin": {
-    "backend-modular-starter": "./index.js"
+    "backend-modular-starter": "index.js"
   },
   "files": [
     "index.js",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "test": "echo \"No tests\" && exit 0"
@@ -35,6 +36,14 @@
   ],
   "author": "Jai",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaiKumarSuther/backend-modular-starter.git"
+  },
+  "homepage": "https://github.com/JaiKumarSuther/backend-modular-starter#readme",
+  "bugs": {
+    "url": "https://github.com/JaiKumarSuther/backend-modular-starter/issues"
+  },
   "dependencies": {
     "chalk": "^4.1.2",
     "fs-extra": "^11.2.0",
